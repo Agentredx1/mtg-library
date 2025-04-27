@@ -4,7 +4,7 @@ import './Deckbuilder.css'
 import DeckStorageControls from './Components/DeckStorageControls.jsx'
 
 export function DeckBuilder() {
-  const { deckList, handleDeckSubmit, outputText, saveDeckList, loadDeckList, deleteDeckList, compareVersions } = useDeckController()
+  const { deckList, handleDeckSubmit, outputText, saveDeckList, loadDeckList, deleteDeckList, compareVersions, addVersion, setOutputText } = useDeckController()
   const [deckInput, setDeckInput] = useState('');
   const [deckName, setDeckName] = useState('');
 
@@ -21,6 +21,8 @@ export function DeckBuilder() {
       deleteDeckList={deleteDeckList}
       deckList={deckList}
       compareVersions={compareVersions}
+      addVersion={addVersion}
+      setOutputText={setOutputText}
       />
     </>
   );

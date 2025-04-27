@@ -8,7 +8,7 @@ export default function DeckStorageControls({
   loadDeckList,
   deleteDeckList,
   setOutputText,
-  onCompare
+  compareVersions
 }) {
   const [deckInput, setDeckInput] = useState('');
   const [deckName, setDeckName] = useState('');
@@ -16,23 +16,31 @@ export default function DeckStorageControls({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    const cards = parseDeckInput(deckInput);
-    const { newNode } = addVersion(cards, deckName);
-    const tail = deckList.tail;
-    const previous = deckList.DeckNodes[deckList.DeckNodes.length - 2];
-
+    const { newNode } = addVersion(deckInput, deckName);
+  
     if (deckList.DeckNodes.length === 1) {
       setOutputText(`New deck '${deckName}' created.`);
     } else {
-      const { added, removed } = deckList.compareNodes(tail.version, previous.version);
-      setOutputText(`Changes:\nAdded: ${[...added].join(", ") || "None"}\nRemoved: ${[...removed].join(", ") || "None"}`);
-      console.log('Added:', added);
-      console.log('Removed:', removed);
+      const tail     = deckList.tail;
+      const previous = deckList.DeckNodes[deckList.DeckNodes.length - 2];
+  
+      if (tail && previous && tail.cards && previous.cards) {
+        const { added, removed } = deckList.compareNodes(tail, previous);
+        setOutputText(
+          `Changes:\n` +
+          `Added:   ${added.length   ? added.join(", ")   : "None"}\n` +
+          `Removed: ${removed.length ? removed.join(", ") : "None"}`
+        );
+        console.log("Added:",   added);
+        console.log("Removed:", removed);
+      } else {
+        setOutputText("No changes detected.");
+      }
     }
-
+  
     console.log(deckList);
   };
+  
 
   const handleVersionSelect = (version) => {
     if (selectedVersions.includes(version)) {
@@ -44,7 +52,14 @@ export default function DeckStorageControls({
 
   const handleCompareClick = () => {
     if (selectedVersions.length === 2) {
-      onCompare(selectedVersions[0], selectedVersions[1]);
+        const { added, removed } = compareVersions(deckList.DeckNodes[selectedVersions[0]], deckList.DeckNodes[selectedVersions[1]]);
+        setOutputText(
+          `Changes:\n` +
+          `Added:   ${added.length   ? added.join(", ")   : "None"}\n` +
+          `Removed: ${removed.length ? removed.join(", ") : "None"}`
+        );
+        console.log("Added:",   added);
+        console.log("Removed:", removed);
     } else {
       alert('Please select exactly two versions to compare.');
     }
